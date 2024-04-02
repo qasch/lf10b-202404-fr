@@ -1,0 +1,87 @@
+= Dokumentaion LF10b - Linux
+:toc:
+
+== Grundlegende Kommandos
+
+- `whoami` - zeigt den aktuell angemeldeten Benutzer an
+- `pwd` - zeigt das aktuelle Verzeichnis an
+- `ls` - zeigt den Inhalt eines Verzeichnisses an
+- `ls -a` - zeigt auch versteckte Dateien an
+- `ls -l` - zeight ausführliche Informationen zu Dateien an
+- `ls -t` - sortiert nach Änderungsdatum
+- `ls -r` - kehrt Sortierreihenfolge um
+- `cd <dir>` - _Change Directory_: wechselt in das Verzeichnis `<dir>`
+- `su -l <user>` - _Substitute User_: wechselt in den Benutzeraccount `<user>`
+
+== Hilfe auf der Kommmandozeile
+
+- Option `--help` existiert für die meisten Kommandos
+
+=== Manpages
+
+Mit dem Kommando `man <commmand>` kann die Handbuchseite zum Kommando `<command>` aufgerufen werden. So gut wie *jedes* extern realisierte Kommando verfügt über eine Manpage.
+
+Innerhalb der Manpage kann gesucht werden (`/` (vorwärts) bzw. `?` (rückwärts)).
+
+Manpages sind in Abschnitte (_Sektionen_) unterteilt. 
+
+Aufruf einer bestimmten Sektion mit
+
+ man <sectionnumber> <command>
+
+Beispiel:
+
+ man 5 passwd
+
+So erhält man Informationen über die *Datei* `passwd` und nicht über das *Kommando* `passwd`.
+
+Manpages können (falls vorhanden) auch in einer anderen Sprache angezeigt werden:
+
+ man -L de_DE.utf8 ls
+
+== History
+
+Jedes Kommando wird in der History der Shell gespeichert. Bei der BASH ist es z.B. die Datei `~/.bash_history`. Mit dem Kommando `history` kann eine Liste dieser Kommandos angezeigt werden. Jedes Kommando hat einen Index `<index>`. 
+
+Ein bestimmtes Kommando kann folgendermaßen erneut aufgerufen werden:
+
+ !<index>
+
+Ansonsten kann mit den Cursor oder `STRG+L` durch die History geblättert werden.
+
+== Pfadangaben
+
+Pfadangaben sind die "Wegbeschreibungen" zu Dateien oder Verzeichnissen. Es gibt zwei Arten von Pfadangaben:
+
+- *relative Pfadangaben* sind immer ausgehend vom aktuellen Verzeichnis, beginnen also *nie* mit einem Slash `/`. 
+- *absolute Pfadangaben* sind immmer ausgehend vom _Wurzelverzeichnis_ `/` und beginnen daher *immer* mit einem Slash `/`.
+
+== Sonderzeichen 
+
+Bestimmte Zeichen haben eine Sonderbedeutung für die BASH. Eins der wichtigsten Sonderzeichen ist der Leerschritt / Space. Dies ist das *Trennzeichen* für die Shell, trennt also z.B. ein Kommando und seine Optionen bzw. Argumente.
+
+Andere Sonderzeichen sind z.B.:
+
+- `*` _Asterisk_ steht für ein beliebiges Zeichen, dass *beliebig oft* vorkommen darf
+- `?` _Fragezeichen_ steht für ein beliebiges Zeichen, dass *exakt einmal* vorkommen darf
+- `!` History Expansion (s.u.)
+- `$` Zeichen für eine Substitution (Variabelsubstitution, Kommandosubstitution ...)
+- `\` _Escape Character_ maskiert das direkt darauf folgende Zeichen, hindert die Shell also daran, dieses mit einer Sonderbedeutung zu interpretieren
+- `~` _Tilde_ symbolisiert das Heimatverzeichnis des aktuellen Benutzers
+- etc.
+
+=== Escapen / Maskieren von Sonderzeichen
+
+Sonderzeichen können ihrer Sonderbedeutung durch _Escapen / Maskieren_ entledigt werden. Bzw. hindern wir die Shell daran dieses Sonderzeichen zu interpretieren.
+
+Sonderzeichen können entweder mit dem Backslash `\` maskiert werden, oder in einfache (`'`) oder doppelte (`"`) Anführungszeichen gesetzt werden.
+
+== externe/interne Kommandos
+
+In der Regel sind Kommandos _extern_ realisiert, d.h. sie sind explizit installiert. Daneben gibt es aber auch _intern_ realisierte Kommandos, die sog. _Builtins_. Diese sind in die Shell eingebaut.
+
+_Builtins_ verfügen (i.d.R.) über keine eigene Manpage, hier kann entweder die Option `--help` genutzt werden oder das Kommando `help`, z.B. `help cd`. 
+
+Ansonsten finden sich alle Informationen dazu in der Manpage der BASH.
+
+== Dateioperationen
