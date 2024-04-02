@@ -1,0 +1,73 @@
+= Übungen zu Dateien und Verzeichnissen
+
+Erselle ein Verzeichnis `uebungen-dateien-verzeichnisse` im aktuellen Verzeichnis und wechsel hinein. Dieses Verzeichnis ist das _aktuelle Verzeichnis_ für die folgenden Übungen.
+
+== Aufgabe 1
+
+1. Erstelle ein Verzeichnis mit dem Namen `my_folder` im aktuellen Verzeichnis.
+
+2. Erstelle eine leere Datei mit dem Namen `my_file.txt` im aktuellen Verzeichnis.
+
+3. Kopiere die Datei `my_file.txt` in das Verzeichnis `my_folder`.
+
+4. Erstelle eine Kopie der Datei `my_file.txt` mit dem Namen `my_file_copy.txt` im aktuellen Verzeichnis.
+
+5. Verschiebe die Datei `my_file.txt` in das Verzeichnis `my_folder`.
+
+6. Lösche die Datei `my_file_copy.txt` im aktuellen Verzeichnis.
+
+7. Lösche anschliessend die Datei `my_file.txt` im Verzeichnis `my_folder`
+
+8. Lösche das Verzeichnis `my_folder` und alle Dateien und Unterverzeichnisse darin.
+
+== Aufgabe 2
+
+1. Erstelle ein Verzeichnis mit dem Namen `my_files` im aktuellen Verzeichnis und darin fünf Dateien `file1.txt`, `file2.txt`, `file3.txt`, `other_file.txt`, `image1.jpg` und `image2.jpg`.
+
+2. Erstelle ein Verzeichnis mit dem Namen `backup` im aktuellen Verzeichnis und kopiere das gesamte Verzeihnis `my_files` inkl. Inhalt in dieses Verzeichnis.
+
+3. Erstelle ein Verzeichnis mit dem Namen `images` im aktuellen Verzeichnis und kopiere *mit einem Kommando* alle Dateien aus `my_files` mit der Erweiterung `.jpg` in dieses Verzeichnis.
+
+4. Erstelle ein Verzeichnis mit dem Namen `important_files` im aktuellen Verzeichnis und verschiebe die Dateien `file1.txt` und `file2.txt` aus `my_files` in dieses Verzeichnis.
+
+5. Lösche alle Dateien aus `my_files`, außer der Datei `other_file.txt`.
+
+= Aufgabe 3
+
+1. Erstellt ein Verzeichnis mit dem Namen `MyDir` in eurem Heimatverzeichnis.
+
+2. Versucht nun, *in einem Schritt* folgende Verzeichnisstruktur zu erstellen: `mkdir /home/<user>/MyDir/UnterDir/UnterUnterDir`. Was fällt euch auf? Wie könnt ihr das gewünschte Ziel trotzdem erreichen? Konsultiert dazu evtl. die Manpage von `mkdir`.
+
+3. Erstellt im Verzeichnis `MyDir` drei Dateien mit beliebigem Namen.
+
+4. Kopiert nun in *einem Schritt* alle drei Dateien nach `~/MyDir/UnterDir/UnterUnterDir`.
+
+5. Verschiebt jetzt die drei Dateien von `MyDir` nach `~/Mydir/Unterdir`. Benennt anschließend das Verzeichnis `UnterDir` in `MyFiles` um.
+
+6. Löscht zuerst alle Dateien in `UnterUnterDir` mit einem Befehl und löscht danach das nun leere Verzeichnis.
+
+== Zusatz
+
+1. Was passiert, wenn ihr versehentlich versucht, drei Dateien auf der gleichen Befehlszeile in eine bereits vorhandene Datei zu kopieren anstatt in ein Verzeichnis?
+
+2. Was passiert, wenn ihr mit `mv` ein Verzeichnis in sich selbst verschiebt?
+
+3. Verwendet die Man Page von `cp`, um herauszufinden, wie man eine Kopie einer Datei erstellt und die Berechtigungen und Änderungszeiten mit dem Original übereinstimmen.
+
+4. Angenommen, ihr befindet euch im (nicht existierenden) folgenden Verzeichnis: `/opt/someprog/config/system/users`
+
+In welchem Verzeichnis befindet ihr euch, nachdem ihr folgenden Befehl eingegeben habt:
+
+ cd ../users/../././../../././././../
+
+== Verwendete Kommandos / Dateien / Verzeichnisse
+
+----
+touch
+cd
+cp
+mv
+rm
+mkdir
+rmdir
+----
