@@ -1,0 +1,31 @@
+== Übungen zu Benutzer, Gruppen und Berechtigungen
+
+Kai Schell <kai.schell@signet.de>
+
+:lang: de   
+:icons: font
+:toc:
+:toc-position: right
+:numbered!:
+
+. Installiert den Webserver Apache2 mit folgendem Kommando: `apt install apache2` (den brauchen wir später).
+. Erstellt einen neuen Benutzer namens 'Ian Webber' mit dem Login `iwebber` und sorgt dafür, dass ihr euch als dieser Benutzer am System anmelden könnt.
+. Erstellt einen weiteren Benutzer namens 'Prakti Kant' mit dem Login `praktikant`und sorgt dafür, dass ihr euch als dieser Benutzer am System anmelden könnt. 
+. *Zusatzaufgabe*: Wie könnt ihr sicherstellen, dass sich die neuen Benutzer am System anmelden können, ihr anschliessend aber keine Kenntnis mehr über dessen Passwort habt? Werft dazu einen Blick in die Manpage von `chage` und/oder `passwd`
+. Erstellt eine neue Gruppe namens `webdevs`.
+. Fügt die Benutzer `iwebber` und `praktikant` der Gruppe `webdevs` hinzu.
+. Erstellt ein neues Verzeichnis mit dem Namen `website` im Verzeichnis `/var/www/html`. 
+. Erstellt im Verzeichnis `website` eine neue Datei namens `index.html` mit folgendem Inhalt: 
+
+ <h1>Unglaublich tolle Website</h1>
+ <p> Hier kommt irgendwann auch noch Inhalt rein</p>
+
+. Setzt den Besitzer der `index.html` auf `www-data` und die Gruppe auf `webdevs`.
+. Ändert die Berechtigungen der `index.html`-Datei so, dass der Besitzer die Datei lesen kann, Mitglieder der Gruppe die Datei lesen und schreiben können und alle anderen keine Berechtigungen haben. Überlegt euch, ob hier die _oktale_ oder die _symbolische_ Rechtevergabe schneller zum Ziel führt.
+. Ermittelt nun die IP Adresse eures Linux-Systems und öffnet diese folgendermassen in einem Browser: `http://<ip-addresse>/website`. Wird die Webseite angezeigt?
+. Erstellt im Verzeichnis `website` eine weitere Datei namens `config.php`, setzt den Besitzer auf `www-data` und die Gruppe auf `webdevs` und sorgt dafür, dass der Webserver den Inhalt der Datei ändern kann.
+. Erstellt im Verzeichnis `website` ein neues Verzeichnis namens `logs` und setzt den Besitzer auf `root` und die Gruppe auf `webdevs`.
+. Ändert die Berechtigungen des `logs`-Verzeichnisses so, dass der Besitzer im Verzeichnis lesen, schreiben und ausführen kann, die Gruppe im Verzeichnis lesen und ausführen kann und alle anderen keine Berechtigungen haben. 
+. Erstellt zwei neue Dateien namens `access.log` und `error.log` im `logs`-Verzeichnis und überprüft die Gruppenzugehörigkeiten der Dateien.
+. Ändert die Gruppenzugehörigkeit des `logs`-Verzeichnisses und aller darin enthaltenen Elemente auf die Gruppe `sysadmins`. Geht das einfach so? Oder müsst ihr hier im Vorfeld noch etwas unternehmen?
+. Entfernt den Benutzer `praktikant` aus der Gruppe `webdevs`.
