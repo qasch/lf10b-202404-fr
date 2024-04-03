@@ -1,0 +1,80 @@
+= Streams und Redirects
+
+== Pipes, Redirects und Kommandosubstitution
+
+=== Übung 1
+
+a) Lasst euch alle Zeilen der Datei `~/.bashrc` ausgeben, in denen irgend etwas zu Aliasen steht.
+
+a.1) Wie viele sind es?
+
+b) Findet alle Zeilen in allen Dateien in eurem gesamten *Heimatverzeichniss*, in denen etwas zu Aliasen steht. Erstellt dazu im Vorfeld die Datei `~/.bash_aliases` mit einigen selbst definierten Aliasen.
+
+c) Eleminiert nun alle Zeilen von der Ausgabe (aus Aufgabe b), die nur Kommentare sind (also mit einer Raute `#` beginnen).
+
+c.1) Wie viele bleiben nun übrig? Vergleicht das Ergebnis mit Aufgabe a)
+
+d) Werden denn jetzt wirklich nur Alias-Definitionen angezeigt oder auch noch andere Zeilen? Falls ja, versucht auch diese *nicht* mit auszugeben, so dass ihr letztlich nur Zeilen angezeigt bekommt, in denen wirklich Aliase definiert werden.
+
+_Hinweis_: Um die obigen Aufgaben korrekt lösen zu können, müsst ihr vielleicht einen Blick in die Manpage von `grep` werfen. Sucht hier nach einer Möglichkeit, bestimmmte Vorkommnisse *nicht* asuzugeben, die Ausgabe also zu _invertieren_. Ausserdem könnte das Kommando `wc` hier sehr nützlich sein.
+
+=== Übung 2
+
+a) Ermittelt die Anzahl der Benutzer, die die _Bash_ als Login Shell nutzen. Nutzt dafür die Datei `/etc/passwd`.
+
+Schreibt das Ergebnis mit Redirects in eine Datei `~/anzahl_user_bash.txt`, `<anzahl>` soll dabei Anzahl der Zeilen angeben:
+
+----
+Anzahl Benutzer, die die BASH nutzen:
+<anzahl>
+----
+
+Macht das Ganze in zwei Schritten, also zwei Kommandos.
+
+b) Erstellt analog zu Aufgabe a) eine Datei mit Namen `~/anzahl_user_no-bash.txt`, in der die Anzahl der Benutzer angegeben wird, die *nicht* die BASH als Login Shell nutzen.
+
+----
+Anzahl Benutzer, die *keine* BASH nutzen:
+<anzahl>
+----
+
+c) Ermittelt nun alle _Vollnamen_ bzw. _Kommentare_ der Benutzer, die die BASH als Login Shell benutzen und schreibt das Ergebnis in eine Datei.
+
+_Hinweis_: Schaut euch hierfür den Befehl `cut` und die dazugehörige Manpage an. Ihr erfahrt mehr über den Aufbau der Datei `/etc/passwd` über die entsprechende Manpage. Falls ihr diese nicht finden solltet, lest euch nochmal den Abschnitt über _SECTION_ bzw _ABSCHNITT_ aus der Manpage von `man` durch.
+
+=== Übung 3
+
+a) Erstellt eine Datei `i-am.txt` (ohne Editor, nur über Redirects) mit folgendem Inhalt:
+
+----
+Hallo, ich bin <username>.
+
+Heute ist der <dd.mm.JJJJ>, hh:mm.
+----
+
+Nutzt dafür `echo`, `date`, eine Systemvariable und Redirects.
+
+_Hinweis_: Schaut in der Manpage der _BASH_ nach Kommandosubsitution bzw. Command Substitution oder Ähnlichem und in der Manpage von `echo`.
+
+=== Übung 4
+
+a) Wie viele Programme hat euer System? Zählt dabei die Programme unter `/usr/bin` und `/usr/sbin`.
+
+b) Schreibt die Ergebnisse in eine Datei nach folgendem Schema:
+
+----
+Anzahl Programme:
+
+Verzeichnis "/usr/bin":   43
+Verzeichnis "/usr/sbin":  13
+----
+
+c) *[Zusatz]* Vielleicht findet ihr ja sogar eine Möglichkeit, die Gesamtanzahl aller Programme auszugeben, also die Summe zu bilden. Euer Freund ist wieder einmal die Manpage von `bash`.
+
+----
+Anzahl Programme:
+
+Verzeichnis "/usr/bin":   43
+Verzeichnis "/usr/sbin":  13
+Programme insgesamt: 	  56
+----
