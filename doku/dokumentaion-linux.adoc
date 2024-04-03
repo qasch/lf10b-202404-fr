@@ -127,3 +127,370 @@ Mit `mv` können Dateien verschoben und umbenannt werden.
 == rmdir
 
 löscht *leere* Verzeichnisse
+
+== Textströme umleiten
+
+=== UNIX Philosophie
+
+=== Kanäle
+
+- Standardeingabekanal - `stdin` - Kanalnr. `0`
+- Standardausgabekanal - `stdout` - Kanalnr. `1`
+- Standardfehlerkanal - `stderr` - Kanalnr. `2`
+
+=== Redirects
+
+Mit einem Redirect kann ein Datenstrom in eine Datei umgeleitet werden.
+
+- `>` Mit einem _einfachen_ Redirect wird der Standardausgabekanal oder der Standardfehlerkanal in eine Datei umgeleitet. Die Datei muss vorher nicht existiert haben, sie wird ggf. erzeugt. Eine bereits bestehende Datei wird zuerst geleert/der Inhalt gelöscht und anschließend mit dem Inhalt des Datenstroms beschrieben.
+
+ ls /etc 1> ausgabe_ls.txt     # stdout(1) in datei
+ ls /etc > ausgabe_ls.txt     # stdout(1) in datei
+
+ ls /gibtsnicht 2> fehler_ls.txt     # stderr(2) in datei
+
+- `>>` Mit einem _doppelten_ (anhängenden) Redirect wird der Inhalt des Datenstroms (`stdout` oder `stderr`) an eine bereits bestehende Datei angehängt. Eine nicht existierende Datei würde erzeugt werden.
+- `&>` So werden sowohl `stdout` als auch `stderr` in eine Datei umgeleitet
+
+ ls /etc /gibtsnicht &> ausgabe_und_fehler.txt
+
+Beispiel: Eintrag eines zusätzlichen SSH-Public Keys in die Datei `~/.ssh/authorized_keys` (die Datei muss dazu z.B. auf dem Server vorliegen):
+
+ cat pfad-zur-public-key-datei.pub >> ~/.ssh/authorized_keys
+
+`sterr` wird in `stdout` umgeleteitet und dann `stdout` in datei
+das `&1` ist nötig, damit der Shell klar ist, dass der Kanal 1 gemeint ist
+ansonsten würde die Datei `1` erstellt werden
+
+ ls /etc /gibtsnicht > ausgabe_und_fehler.txt 2>&1    
+
+- `<` Mit dem umgedrehten Redirect kann der Inhalt einer Datei an den Eingabekanal eines Kommandos geleitet werden
+
+ mail -s Mail_Subject empfaenger@mail.example < mailinhalt.txt
+
+== Pipe
+
+Mit der Pipe `|` wird der Ausgabekanal eines Kommandos an den Eingabekanal eines weiteren Kommandos umgeleitet.
+
+- `<Kommando1> | <kommando2>`
+
+ ls -l /etc | less
+ grep alias ~/.bashrc | grep -v `#`
+
+== Filterkommandos
+
+Wir nutzen Filterkommandos um aus einem Textstrom den Inhalt zu herauszufiltern, den wir haben wollen 
+
+=== grep
+
+Alle Zeilen anzeigen, die das Pattern `alias` enthalten. Es wird immer die gesamte Zeile ausgegeben in der das Pattern vorkommt.
+
+ grep 'alias' ~/.bashrc
+
+Gesamten Inhalt der Datei `~/.bashrc` anzeigen, Kommentarzeilen *nicht* mit ausgeben
+
+ grep -v `#` ~/.bashrc 
+
+- `grep -i <pattern>`: Gross- und Kleinschreibung von `<pattern>` ist egal
+- `grep -n <pattern>`: Anzeige der Zeilennummer, in der `<pattern>` gefunden wurde
+- `grep -r <pattern> dir/`: Rekursive Suche, so kann über alle Dateien in einem Verzeichnis _gegrept_ werden
+- `grep -v <pattern>`: _inVert match_: Ausgabe wird _invertiert_, also nur die Zeilen ausgegeben, in denen `<pattern>` *nicht* vorkommt
+- `grep -c <pattern>`: gibt nicht die Zeilen aus, sondern nur die Anzahl der Zeilen in denen `<pattern>` vorkommt
+
+=== cut
+
+Mit `cut` können wir Spalten/Felder/_Fields_ aus tabellarisch aufgebauten Dateien _ausschneiden_ bzw. filtern. Die wichtigen Optionen für `cut` sind `-d` zur Angabe des Trennzeichens (_Delimiter_) und `-f` zur Angabe der Spalte (_Field_). Bsp.:
+
+Ausschließlich die Login-Namen anzeigen lassen:
+
+ cut -d: -f1 /etc/passwd
+
+== Dateisystembaum unter Linux
+
+_Filesystem Hierarchy Standard_ - FHS: Eine Empfehlung an alle Distributionen, wie der Dateisystembaum unter UNIX/Linux aufgebaut sein sollte.
+
+- `/bin`: common executables available for everyone, `ex. cp rm ls`
+- `/boot`: kernel and boot configuration, initial ramdisk, kernel image
+- `/dev`: files which point to both physical and pseudo devices, populated by `udev`
+- `/etc`: systemwide configuration files
+- `/home`: non-root user home directories
+- `/lib`: library files used by the system, include `.so` files and others
+- `/lib32`: library files used by the system, include `.so` files and others
+- `/lib64`: library files used by the system, include `.so` files and others
+- `/lost+found`: saved files due to failure, not relevant for users, just for the system
+- `/media`: auto-mounting place for certain external devices on some distros
+- `/mnt`: place to mount various file systems
+- `/opt`: various software, not installed by package manager
+- `/proc`: virtual filesystem (`procfs`) for resources, processes, and more, only in memory, not actual files on hard disk
+- `/root`: root user home directory
+- `/sbin`: similar to `/bin`, but for system administrators, ex. `fdisk`
+- `/tmp`: temporary file storage, wiped out after reboot
+- `/usr`: user programs, library files, docs, etc.
+- `/var`: variable files for various purposes, ex. logs, tz data, files for webserver (debian)
+- `/vmlinuz`: boot/vmlinuz-4.15.0-43-generic: compressed linux kernel 
+
+=== weitere wichtige Verzeichnisse (nicht Bestandteil des FHS)
+
+- `/sys`: virtual filesystem (`sysfs`), extension to `/proc`
+- `/run`: virtual filesystem, was under `/var/run` (symlinked) before, applications can store data needed to operate, e.g. `.lock` files
+
+== Prozesse
+
+Ein Prozess ist ein sich in der Auführung befindliches Programm. Ein Programm resultiert immer in mindestens einem Prozess. Prozesse laufen jeweils in einem von anderen unabhängigen "Resourcenraum", haben eine eigene _PID_, kennen nur die _PID_ des Prozesses, von dem sie gestartet wurden (Elternprozess). Prozesse können mit dem Kommando `kill` über _Signale_ beeinflusst werden.
+
+Wird der Elternprozess beendet, so werden (in der Regel) gleichzeitig alle Kindprozesse mit beendet.
+
+Auf der Shell kann immer nur ein einzelner Prozess im _Vordergrund_ ausgeführt werden. Prozesse können mit der Tastenkomnination `STRG+Z` angehalten und in den Hintergrund geschickt werden. Mit dem Kommando `bg` kann dieser Prozess dann im Hintergund fortgesetzt werden, `fg` holt den Prozess in den Vordergrund zurück. 
+
+Wir können einen Prozess beim Start aber auch direkt in den Hintergrund schicken und starten (duch Anhängen eines `&`):
+
+ kommando &
+
+- `ps -aux`: Anzeige aller laufende Prozessez
+- `ps -ef`: auch Anzeige aller laufenden Prozesse
+- `ps --forest`: Prozesshirarchie (Baumstruktur) anzeigen
+- `jobs`: Anzeigen der Hintergrundprozesse
+- `fg`: letzten/aktuellen/default Job in den Vordergrund holen
+- `fg %<jobnummer>`: Job mit Jobnummer `<jobnummer>` in den Vordergrund holen
+- `bg`: Hintergrundprozess fortsetzen
+- `bg %<jobnummer>`: Hintergrundprozess mit Jobnummer `<jobnummer>` in fortsetzen
+
+== kill
+
+`kill` sendet Signale an Prozesse. Es muss die PID des Prozesses angegeben werden, Prozessname funktioniert nicht.
+
+- `kill -s <signal> <PID>`: sendet <signal> an den Prozess mit der PID <PID>
+- `kill -<signal> <PID>`: sendet <signal> an Prozess mit der PID <PID>
+
+Die PID eines Prozesses kann auf mehrere Arten ermittelt werden:
+
+ ps -ef | grep <prozessname>
+ pgrep <prozessname>
+ ...
+
+=== einige wichtige Signale
+
+- `SIGTERM` (15): Standard, falls kein bestimmtes Signal angegeben wird. Sendet eine "freundliche" Aufforderung an den Prozess, sich doch bitte zu beenden. Im Prozess selbst ist festgelegt, wie er sich beendet, z.B. werden noch gewisse Aufräumarbeiten durchgeführt etc.
+- `SIGINT` (2): sendet eine etwas deutlichere Aufforderung an den Prozess, sich zu beenden, wird bei der Tastenkomnination `STRG+C` (_Cancel_) gesendet
+- `SIGKILL` (9): rabiateste Methode, Signal wird nicht an den Prozess, sondern direkt an den Scheduler gesendet, der daraufhin den entsprechenden Prozess aus seiner Liste löscht, der Prozess somit keine CPU Zeit mehr zur Verfügung gestellt bekommt und somit zwangsläufig beendet wird.
+- `SIGSTOP` (19): hält Prozess an und schickt ihn in den Hintergrund (`STRG+Z`)
+- `SIGCONT` (18): startet angehaltene Prozesse
+
+=== pkill und killall
+
+- `pkill`: analog zu oben, `pkill` erwartet aber den Namen bzw. einen Teil des Namens eines Prozesses anstatt der PID. Falls mehere Prozesse auf den Namen passen, wird das Signal an *alle* diese Prozesse gesendet.
+- `killall` auf neueren Distributionen nicht mehr vorhanden, ähnliches Verhalten wie `pkill`
+
+== Benutzer und Gruppen
+
+=== Benutzer 
+
+Es gibt zwei Arten von Bentuzern: 
+
+- _Reale Benutzer_ : Haben in der `/etc/passwd` eine Login-Shell (z.B. BASH) zugewiesen. Diese Benutzer können sich also interaktiv am System anmelden und Kommondos ausführen. Auf den meisten Distributionen beginnen deren UIDs mit 1000, sind also vierstellig
+- _Systembenutzer_: Haben *keine* Login-Shell zugewiesen (`/usr/sbin/nologin`), sie können sich also *nicht* am System anmelden und sind dafür gedacht, dass Dienste unter ihrem Benutzerkontext laufen. 
+
+==== Benutzer anlegen
+
+Das Kommanod `useradd` ist auf allen Distributionen verfügbar und ist der Standart zum Anlegen neuer Benutzer. 
+
+Auf Debian-basierten Distributionen gibt es den _Wrapper_ `adduser`, also ein (Perl-) Skript, welches intern wiederum `useradd` nutzt, allerdings arbeitet es _interaktiv_, fragt also gewisse Einstellungen ab, diese müssen nicht direkt über Optionen angegeben werden.
+
+Weiterhin ruft `adduser` das Kommando `passwd` auf, so dass beim Anlegen eines Benutzers gleichzeitig ein Passwort festgelegt wird.
+
+Beispiel für das Anlegen eines Bentuzers mit `useradd`.
+
+ useradd -m -c 'Tux Tuxedo' -s /bin/bash tux
+
+- `-m`: Heimatverzeichnis unter `/home` mit gleichem Namen wie User anlegen und Standarddateien aus `/etc/skel` dorthin kopieren
+- `-c`: Kommentarfeld, z.B. voller Name des Benutzers
+- `-s`: Login-Shell
+
+Anschließend muss noch das Kommando `passwd <user>` aufgerufen werden, um dem Benutzer ein Passwort zuzuweisen. Ansonsten kann sich der neue User nicht anmelden.
+
+==== relevante Dateien beim Anlegen von Benutzern
+
+- `/etc/passwd`: hier werden alle User aufgelistet mit Grundeinstellugen (UID, GID, Heimatverzeichnis, Login-Shell etc.)
+- `/etc/shadow`: verschlüsselte und gesaltete Passwörter der Benutzer, Ablaufzeiten des Passworts
+- `/etc/group`: Liste der Gruppen und deren Mitglieder
+- `/etc/gshadow`: Passwörter für Gruppen (wird jedoch nicht genutzt)
+
+=== Benutzer wechseln
+
+`su`: _Substitute User_ Benutzer wechseln
+
+- `su tux`: Wechselt in den Benutzeraccount von `tux`, Umgegung (env, Variablen etc.) werden teilweise neu gesetzt, aber nicht alle.
+- `su - tux`: wie oben, es werden aber alle Umgebungsvariablen neu gesetzt (auch `$PATH`) ("echte" Login Shell)
+- `su -l tux`: wie oben
+- `su --login tux`: wie oben
+
+=== Gruppen
+
+- beim Anlegen eines Benutzers wird (auf den meisten Distributionen) eine Gruppe erstellt, die genauso heißt wie der Benutzer. Dies ist die _primäre_ oder _initiale_ Gruppe des Users.
+- ein User kann beliebig vielen _sekundären_ Gruppen angehören
+- Gruppen können nur einzelne User enthalten, keine weiteren Gruppen
+
+Gruppen können mit dem Kommando `groupadd` erstellt werden
+
+ groupadd gfn 
+
+Benutzer `tux` der Gruppe `gfn` hinzufügen:
+
+ usermod -aG gfn tux
+
+Wichtig ist hier das `-a` (_append_), ansonsten werden alle anderen Gruppenzugehörigkeiten von `tux` gelöscht (bis auf die _primäre_ Gruppe).
+
+*Wichtig:* Gruppenzugehörigkeiten werden erst aktiv, wenn sich der Benutzer einmal komplett vom System ab- und wieder angemeldet hat.
+
+=== Besitzer / Gruppe von Dateien ändern
+
+Besitzer auf `tux` ändern:
+
+ chown tux file.txt
+
+Besitzer auf `tux` und Gruppe auf `users` ändern:
+
+ chown tux:users file.txt
+
+Nur Gruppe auf `users` ändern:
+
+ chown :users file.txt
+ chgrp users file.txt
+
+== Rechteverwaltung
+
+- `r` read
+- `w` write
+- `x` eXecute
+
+Im Listing von `ls -l`:
+
+ -rw-r--r-- 1 tux tux 27 Nov  6 10:50 file.txt
+
+Das erste Minuszeichen (`-`) gibt an, dass es sich um eine reguläre Datei handelt, hier könnte aber auch ein `d` für _Directory_ stehen oder ein `b` für _Block Device_, ein `l` für _Symbolic Link_ etc.
+
+Es folgen die Berechtigungen für User, Group und Others:
+
+ User Group Others
+ rw-  r--   r--
+
+=== Bedeutung der Berechtigungen
+
+Angewandt auf Dateien:
+
+- `r` Inhalt der Datei lesen
+- `w` Inhalt der Datei verändern
+- `x` Datei ausführen
+
+Angewandt auf Verzeichnisse:
+
+- `r` Inhalt des Verzeichnisses lesen
+- `w` Dateien oder Verzeichnisse erstellen oder löschen
+- `x` Verzeichniss betreten
+
+=== Symbolische Rechtevergabe
+
+Hier werden _Symbole_ verwendet:
+
+- `r` read
+- `w` write
+- `x` eXecute
+- `u` User
+- `g` Group
+- `o` Others
+- `a` All (`ugo`)
+ 
+Berechtigungen können hinzugefügt (`+`), entfernt (`-`) oder gesetzt (`=`) werden.
+
+Beispiele:
+
+ chmod u-w file.txt             # Schreibrecht für den User entfernen
+ chmod g+w file.txt             # Schreibrecht für die Gruppe hinzufügen
+ chmod go-x file.txt            # Gruppe und Ohters das Ausführungsrecht entziehen
+ chmod u=rwx,g=rw,o=r file.txt  # Rechte für User auf rwx setzen, für Gruppe auf rw und Ohters auf r
+
+Die symbolische Rechtevergabe eignet sich also vor allem dafür, wenn einzelne Rechte hinzugefügt oder entfernt werden sollen, die anderen Rechte beibehalten werden.
+
+=== Numerische / Oktale Rechtevergabe
+
+- `r` read    -> 4
+- `w` write   -> 2
+- `x` eXecute -> 1
+
+Bei der numerischen Rechtevergabe können nur *alle* Rechte auf einmal gesetzt werden, also für User, Group und Others gleichzeitig. Die Werte der Rechte werden dabei addiert:
+
+       ugo
+ chmod 640 file.txt
+
+Ist gleichbedeuten mit:
+
+ chmod u=rw,g=r,o-rwx file.txt
+
+==== Herkunft/Erklärung 
+
+ Okt. Binär
+
+  1   001
+  2   010
+  4   100
+
+Gut zu sehen am Listing von `ls -l`. Ist das entsprechende Recht gesetzt, ist auch ein Bit (im Speicher) gesetzt:
+
+  6   4   4
+ 110 100 100
+ rw- r-- r--
+
+== Paketverwaltung
+
+Upgrade *aller* Pakete auf dem System:
+
+ apt update
+ apt upgrade
+
+Installation eines Pakets mit `apt install <paketname>`:
+
+ apt install apache2
+ apt install htop
+
+Entfernen eines Pakets (Konfgurationsdateien bleiben auf dem System):
+ 
+ apt remove apache2
+
+Entfernen eines Pakets (Konfgurationsdateien werden mit entfernt):
+ 
+ apt remove --purge apache2
+ apt purge apache2
+
+Paketquellen befinden sich in der Datei `/etc/apt/sources.list` bzw. als weitere `*.list` Dateien im Verzeichinis `/etc/apt/sources.list.d`
+
+Hier können auch Fremdpaketquellen konfiguriert werden, z.B. für aktuellerer PHP Versionen, siehe auch hier: 
+
+- https://wiki.crowncloud.net/?How_to_Install_PHP_8_2_Debian_11
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
