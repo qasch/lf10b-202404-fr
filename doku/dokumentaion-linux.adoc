@@ -85,3 +85,45 @@ _Builtins_ verfügen (i.d.R.) über keine eigene Manpage, hier kann entweder die
 Ansonsten finden sich alle Informationen dazu in der Manpage der BASH.
 
 == Dateioperationen
+
+== touch
+
+Ändert den Zeitstempel einer vorhandenen Datei bzw. erstellt eine neue Datei ohne Inhalt.
+
+ touch newfile.txt
+
+== mkdir
+
+Mit dem Kommando `mkdir` können Verzeichnisse erstellt werden. Sollen in einem Rutsch mehrere Unterverzeichnisse erstellt werden, übergeben wir zusätzlich den Schalter `-p`.
+
+ mkdir my_dir
+
+ mkdir -p ~/my_dir/sub_dir/sub_sub_dir
+
+== cp
+
+- `cp <quelle> <ziel>` kopiert `<quelle>` nach `<ziel>`. Hierbei sind beides Dateien. Existiert `<ziel>` nicht, wird es erstellt, ansonsten ungefragt überschrieben.
+- `cp -i <quelle> <ziel>` so wird vor dem Überschreiben eine Nachfrage eingeblendet
+- `cp -r <verzeichnis> <ziel>` beim Kopieren von Verzeichnissen muss die Aktion _rekursiv_ durchgeführt werden (Option `-r`)
+- `cp -u <quelle> <ziel>` ersetzt `<ziel>` nur dann, wenn `<quelle>` neuer ist bzw. überhaupt Unterschiede vorhanden sind
+- `cp -p <quelle> <ziel>` behält Dateiatribute (Bestizer, Rechte, Timestamp) bei
+- `cp -a <quelle> <ziel>` behält auch Dateiatribute bei, enthält zusätzlich die Option `-r`.
+
+== mv
+
+Mit `mv` können Dateien verschoben und umbenannt werden.
+
+- `mv <quelle> <ziel>` verschiebt `<quelle>` nach `<ziel>`
+- `mv <quelle> <ziel>` benennt `<quelle>` in `<ziel>` um
+- Für `mv` gibt es keine Option `-r`. Sowohl `<quelle>` als auch `<ziel>` können Verzeichnisse sein. 
+- auch für `mv` gibt es die Option `-i`
+
+== rm
+
+- `rm <datei>` löscht `<datei>` ohne Nachfrage
+- `rm -r <verzeichnis>` löscht `<verzeichnis>`
+- auch für `rm` gibt es die Option `-i`
+
+== rmdir
+
+löscht *leere* Verzeichnisse
