@@ -467,7 +467,104 @@ Hier können auch Fremdpaketquellen konfiguriert werden, z.B. für aktuellerer P
 
 - https://wiki.crowncloud.net/?How_to_Install_PHP_8_2_Debian_11
 
+== SSH
 
+- Client-Server Architektur (Client: `ssh`, Server: `sshd`)
+- SSH ist ein _Dienst_ oder _Service_ bzw. ein _Darmon_
+
+=== SSH Client
+
+Verbindung zu einem SSH Server:
+
+ ssh <user>@<ip-adresse>
+ ssh tux@10.0.1.2
+
+Zusätzlich kann der Port angegeben werden:
+
+ ssh -p <port> <user>@<ip-adresse>
+ ssh -p 2222 tux@10.0.1.2
+
+Bzw. der verwendete SSH-Key:
+
+ ssh -i <pfad-zum-private-key> <user>@<ip-adresse>
+ ssh -i ~/.ssh/id_rsa tux@10.0.1.2
+
+Um all diese Angaben nicht jedes Mal beim Anmelden machen zu müssen, kann eine Konfgurationsdatei (`~/.ssh/config`) erstellt werden mit z.B. folgendem Inhalt:
+
+----
+Host debian-server
+  HostName 10.0.1.2
+  User tux
+  Port 2222
+  IdentityFile ~/.ssh/id_rsa
+----
+
+Die Anmeldung am Server kann dann folgendermaßen erfolgen:
+
+ ssh debian-server
+
+Bei Problemen mit der Anmeldung kann es sinnvoll sein, sich die Anmeldeinformationen _verbose_ ausgeben zu lassen:
+
+ ssh -v debian-server
+
+=== SSH Server
+
+Status des SSH Servers prüfen:
+
+ systemctl status ssh             # je nach System
+ systemctl status sshd.service    # je nach System
+
+SSH Server neu starten (z.B. nach Änderung der Konfgurationsdatei):
+
+ sudo systemctl restart apache2
+
+Die Konfgurationsdatei befindet sich hier:
+
+ /etc/ssh/sshd_config
+
+Hier können u.a. der verwendete Port, die Zugriffsmöglichkeiten (Passwort, PublicKey etc), erlaubte IP-Adressen, Netze, Benutzer usw. konfiguriert werden.
+
+Um *ausschließlich* die Anmeldung per PublicKey zuzulassen, wird folgende Zeile geändert:
+
+ PasswordAuthentication yes
+
+auf
+
+ PasswordAuthentication no
+
+Weiterhin muss folgende Zeile aktiv sein:
+
+ PubkeyAuthentication yes 
+
+*WICHTIG:* Testet eure Konfiguration, bevor ihr die Änderungen übernehmt (hierzu muss der SSH Server neu gestartet werden, s.o.).
+
+=== Public Key Authentication
+
+Zur Authentifizierung mittels Privat-/Public Key muss auf dem *Client* ein Schlüsselpaar als der Benutzer von dem aus wir uns anmelden wollen erzeugt werden:
+
+ ssh-keygen
+
+Das Kommando ist interaktiv. Hier kann auch ein anderen Name für den Schlüssel angegeben werden (absoluter Pfad), z.B. `~/.ssh/debian-server`.
+
+Mit dem optionalen Passwort wird der Private Key zusätzlich verschlüsselt und muss bei Benutztung jedes Mal entschlüsselt werden. Zur Vereinfachung kann der entschlüsselte Schlüssel mit dem `ssh-agent` verwaltet werden. Näheres dazu ist in der Manpage zu finden.
+
+Nach der Erzeugung des Schlüsselpaares muss der *öffentliche* Schlüssel noch auf den Server übertragen und in die Datei `~/.ssh/authorized_keys` des Benutzers eingetragen werden, als der wir uns am Zielsystem anmelden wollen.
+
+Hierzu kann (auf Linux Systemen) z.B. das Kommando `ssh-copy-id` benutzt werden.
+
+Manuell wären u.a. folgende Schritte denkbar:
+
+Öffentlichen Schlüssel mit `scp` auf das Zielsystem kopieren:
+
+ scp ~/.ssh/id_rsa.pub tux@10.0.1.2:
+
+Wichtig ist hier der Doppelpunkt (`:`) hinter der IP-Adresse.
+
+Nun melden wir uns per Passwort am Zielsystem an und fügen den Inhalt der kopierten Datei an die Datei `~/.ssh/authorized_keys` an:
+
+ cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
+
+In der Datei `authorized_keys` befindet sich jeweils ein öffentlicher Schlüssel pro Zeile.
 
 
 
